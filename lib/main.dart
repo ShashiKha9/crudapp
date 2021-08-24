@@ -1,81 +1,67 @@
 
-import 'package:crudapp/login.dart';
-import 'package:crudapp/usermodel.dart';
+import 'package:crudapp/list.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'form.dart';
 void main() {
   runApp(MaterialApp(
-      home: LoginPage()));
+      home: Login()));
 }
 class Login extends  StatefulWidget{
   @override
   LoginState createState()=> LoginState();
 }
-Future<UserModel?> createUser(String name,String job) async {
-final String apiUrl ="https://reqres.in/api/users";
+class LoginState extends State<Login>{
+ var _body;
+  var title;
+  void initState(){
+    super.initState();
+    changeView(0);
 
-final response = await http.post(Uri.parse(apiUrl),body: {
- "name": name,
- "job": job
- } );
+  }
 
-if(response.statusCode == 201){
-  final String responseString = response.body;
-  return userModelFromJson(responseString);
+  int _currenrindex = 0;
+
+  void onTap(index) {
+    changeView(index);
+  }
+  void changeView(index){
+    _currenrindex=index;
+    setState(() {
+
+    switch(index) {
+      case 0:{
+        title ="Form";
+        _body=MyForm();
+        break;
+    }
+    case 1: {
+    title ="List";
+    _body=MyList();
+    break;
+
+  }
+  }
+    });
 }
-else {
-  return null;
-}
-
-}
-
-class LoginState extends State<Login> {
-  final formKey =GlobalKey<FormState>();
-late final UserModel _user;
-
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController jobController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
-return Scaffold(
-  appBar: AppBar(
-    title: Text("Login Page"),
+return MaterialApp(
+  home: Scaffold(
+    appBar: AppBar(
+      title: Text("Login"),
+    ),
+    body: _body,
+    bottomNavigationBar: BottomNavigationBar(items: [
+      BottomNavigationBarItem(icon: Icon(Icons.add),title: Text("Add")),
+      BottomNavigationBarItem(icon: Icon(Icons.table_rows),title: Text("View")),
 
-  ),
-  body: Container(
-    child: Column(
-      children: [
-        TextField(
-          controller: nameController,
-        ),
-        TextField(
-controller: jobController,
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        _user == null ? Container():
-            Text("${_user.name},${_user.id}"),
-        RaisedButton(child: Text("Submit"),
-        onPressed: () async {
-          final String name = nameController.text;
-          final String job = jobController.text;
-
-          final UserModel? user = await createUser(name, job);
-          setState(() {
-            _user = user!;
-
-          });
-
-        },
-        )
-      ],
-
+    ],
+        currentIndex: _currenrindex,
     ),
   ),
-
-) ;
+);
   }
-}
+  }
+
 

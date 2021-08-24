@@ -5,39 +5,45 @@ import 'package:http/http.dart' as http;
 import 'form.dart';
 void main() {
   runApp(MaterialApp(
-      home: Login()));
+      home: Login(0)));
 }
 class Login extends  StatefulWidget{
+  int state;
+  Login(this.state);
   @override
-  LoginState createState()=> LoginState();
+  LoginState createState()=> LoginState(this.state);
 }
-class LoginState extends State<Login>{
- var _body;
-  var title;
+class LoginState extends State<Login> {
+  int state;
+  var _body;
+ var _title;
+
+  LoginState(this.state);
+  @override
   void initState(){
     super.initState();
-    changeView(0);
+    changeView(state);
 
   }
 
-  int _currenrindex = 0;
+  int _currenntindex = 0;
 
   void onTap(index) {
     changeView(index);
   }
   void changeView(index){
-    _currenrindex=index;
+    _currenntindex=index;
     setState(() {
 
     switch(index) {
       case 0:{
-        title ="Form";
-        _body=MyForm();
+        _title ="Form";
+        _body=MyList();
         break;
     }
     case 1: {
-    title ="List";
-    _body=MyList();
+    _title ="List";
+    _body=MyForm();
     break;
 
   }
@@ -49,7 +55,7 @@ class LoginState extends State<Login>{
 return MaterialApp(
   home: Scaffold(
     appBar: AppBar(
-      title: Text("Login"),
+      title: Text(_title),
     ),
     body: _body,
     bottomNavigationBar: BottomNavigationBar(items: [
@@ -57,7 +63,7 @@ return MaterialApp(
       BottomNavigationBarItem(icon: Icon(Icons.table_rows),title: Text("View")),
 
     ],
-        currentIndex: _currenrindex,
+        currentIndex: _currenntindex,
     ),
   ),
 );

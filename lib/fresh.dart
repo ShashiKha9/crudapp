@@ -2,8 +2,11 @@
 
 import 'dart:convert';
 
+import 'package:crudapp/user.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:async';
 
 void main() {
   runApp(MaterialApp(
@@ -14,104 +17,89 @@ class LoginPage extends StatefulWidget{
   @override
   LoginPageState createState() => LoginPageState();
 
+
 }
+class LoginPageState extends State<LoginPage>{
+  get list => null;
+
+  get i => null ;
+
+  @override
+  void initState() {
+    super.initState();
+    this.getData();
+  }
 
 
 
+Future<dynamic>  getData() async{
+  var response = await http.get(Uri.parse("https://jsonplaceholder.typicode.com/posts"),
+  headers: {
+ "Accept" : "application/json"
+  }
 
-class LoginPageState extends State <LoginPage> {
+  );
 
-  final formKey = GlobalKey<FormState>();
-  var nameController = TextEditingController();
-  var jobController = TextEditingController();
+
+   List<User> listofuser = response.body as List<User>;
+  final List user1= json.decode(response.body);
+  List<User>list = user1.map((e) =>User.fromJson(e)).toList();
+
+  for(var i=0;i<list.length;i++){
+    print("ak1:"+ list[i].userId.toString());
+    print("ak1:"+ list[i].title);
+    print("ak1:"+ list[i].id.toString());
+
+  }
+
+  User user = response.body as User;
+  print("ak:"+user.title);
+}
 
   @override
   Widget build(BuildContext context) {
+    // TODO: implement build
+    var data;
     return Scaffold(
-        appBar: AppBar(
-          title: Text("MyApp"),
-
-        ),
-        body: Padding(
-          padding: EdgeInsets.all(20.0),
-          child: Form(
-            key: formKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: "name",
-                    hintText: "Enter Email",
-                  ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Enter Your Email";
-                    }
-                    else if (!value.contains("@")) {
-                      return "Enter Valid Email";
-                    }
-                  },
-
-                ),
-                TextFormField(
-                  controller: jobController,
-                  decoration: InputDecoration(
-
-                    labelText: "job",
-                    hintText: "Enter Password",
-                  ),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Enter Your Password";
-                    }
-                    else if (value.length < 6) {
-                      return "Password must be greater than 6";
-                    }
-                  },
+     body: ListView.builder(
+       itemCount: data == null ? 0 : data.length,
+         itemBuilder:(BuildContext context,int index){
+         return Container(
+           child: Center(
+             child: Column(
+               children: [
+                 ListTile(
+                   title: Text(data[index][List[i].userId.toString()]),
+                 ),
+                 RaisedButton(onPressed: getData,
 
 
-                ),
+                   child: Text("data"),
+                 ),
+               ],
+             ),
+           ),
+         );
+         }
 
-                RaisedButton(
-                  padding: EdgeInsets.all(3),
-                  onPressed: () {
-                    login();
+     ),
 
-                  },
-                  child: Text("Login"),
 
-                )
-              ],
-            ),
-          ),
-        )
+
+
+
+
+
+
+
+
+
+
     );
   }
-
-
-  Future<void> login() async {
-    if (nameController.text.isNotEmpty && jobController.text.isNotEmpty) {
-      var response = await http.get(Uri.parse("https://reqres.in/api/users/2"),
-          body: ({
-            "name": nameController.text,
-            "job": jobController.text
-          }));
-
-      //
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Login Sucessfull"),));
-      }
-      else  {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Invalid Credintials"),));
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Blank Field"),));
-    }
-  }
 }
+
+
+
+
 
